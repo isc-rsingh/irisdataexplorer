@@ -1,0 +1,8 @@
+{
+    "objectscript.conn": {
+        "server": "irispy",
+        "ns": "USER",
+        "active": true
+    },
+    "jshint.enable": false
+}
