@@ -1,8 +1,12 @@
 {
     "objectscript.conn": {
         "server": "irispy",
-        "ns": "USER",
-        "active": true
+        "ns": "IRISAPP",
+        "active": true, 
+        "host": "localhost", 
+        "port": 52773, 
+        "username": "_SYSTEM", 
+        "password": "SYS"
     },
     "jshint.enable": false
 }

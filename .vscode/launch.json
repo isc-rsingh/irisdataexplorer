@@ -1,0 +1,20 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "objectscript",
+            "request": "attach",
+            "name": "Explore-attach", 
+            "processId": "${command:PickProcess}"
+        },
+        {
+            "type": "objectscript",
+            "request": "launch",
+            "name": "Explore-launch", 
+            "program": "##class(Explorer.Service).Explore(Data.Covid19,Case-Fatality_Ratio,3)"
+        }
+    ]
+}
