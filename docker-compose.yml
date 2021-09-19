@@ -1,0 +1,15 @@
+version: '3.6'
+services:
+  iris:
+    container_name: 'irispy'
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports: 
+      - 1972:1972
+      - 52773:52773
+      - 53773:53772
+    volumes:
+      - ~/iris.key:/usr/irissys/mgr/iris.key
+      - ./:/irisdev/app
