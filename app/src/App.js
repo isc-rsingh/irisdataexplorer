@@ -1,12 +1,8 @@
 import React from 'react'
 import Container from '@material-ui/core/Container'
-import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
-import Paper from '@material-ui/core/Paper'
-import Box from '@material-ui/core/Box'
-import Button from '@material-ui/core/Button'
-import Card from '@material-ui/core/Card'
 import DatasetProperty from './DatasetProperty'
+import { Divider } from '@material-ui/core'
 
 class App extends React.Component {
   constructor(props) {
@@ -19,16 +15,25 @@ class App extends React.Component {
     }
   }
 
+  componentDidMount() {
+    fetch("http://localhost:52773/api/explorer/explore/datasets")
+      .then(res => res.json() )
+      .then( (data) => {
+        this.setState({ datasets: data.datasets})
+      })
+      .catch(console.log)
+  }
+
   renderDataset() {
     return (
       this.state.datasetprops.map( (dsp) =>
-        <DatasetProperty name={dsp} dataset={this.state} />
+        <DatasetProperty name={Object.keys(dsp)[0]} type={dsp[Object.keys(dsp)[0]]} dataset={this.state.dataset} />
       )
     )
   }
 
   loadDataset(ds) {
-    fetch("http://localhost:52775/csp/explorer/explore/"+ds+"/props")
+    fetch("http://localhost:52773/api/explorer/explore/"+ds+"/props")
       .then(res => res.json() )
       .then( (data) => {
         this.setState({ dataset: ds, datasetprops: data.properties})
@@ -39,9 +44,12 @@ class App extends React.Component {
   renderDatasets() {
     return (
       this.state.datasets.map( (ds) =>
-        <div>
-        <Card variant="outlined" id={ds} onClick={()=>this.loadDataset(ds)}>{ds}</Card>
-        </div>
+        <Grid container>
+          <Grid item xs={12}>
+            <h3 id={ds} className="dataset" onClick={()=>this.loadDataset(ds)}>{ds}</h3>
+            <Divider />
+          </Grid>
+        </Grid>
       )
     )
   }
@@ -50,7 +58,10 @@ class App extends React.Component {
     let lefthead = null
     let leftbody = null
     if (this.state.dataset) {
-      lefthead = <span>{this.state.dataset}</span>
+      lefthead = <span>
+        <span className="dsbreadcrumb">Data Sets / </span>
+        <span>{this.state.dataset}</span>
+      </span>
       leftbody = this.renderDataset()
     } else {
       lefthead = <span>Data sets</span>
@@ -61,8 +72,8 @@ class App extends React.Component {
       <Grid container>
         <Container maxWidth="lg">
         <Grid item xs={12}>
-                <Typography variant="h3" gutterBottom>{lefthead}</Typography>
-                <Paper>{leftbody}</Paper>
+                <h2>{lefthead}</h2>
+                <div>{leftbody}</div>
         </Grid>
         </Container>
       </Grid>

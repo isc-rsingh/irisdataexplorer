@@ -1,51 +1,7 @@
 import React from 'react'
 import Grid from '@material-ui/core/Grid'
-import { BarChart, Bar } from 'recharts'
-
-const data = [
-    {
-      name: "Page A",
-      uv: 4000,
-      pv: 2400,
-      amt: 2400
-    },
-    {
-      name: "Page B",
-      uv: 3000,
-      pv: 1398,
-      amt: 2210
-    },
-    {
-      name: "Page C",
-      uv: 2000,
-      pv: 9800,
-      amt: 2290
-    },
-    {
-      name: "Page D",
-      uv: 2780,
-      pv: 3908,
-      amt: 2000
-    },
-    {
-      name: "Page E",
-      uv: 1890,
-      pv: 4800,
-      amt: 2181
-    },
-    {
-      name: "Page F",
-      uv: 2390,
-      pv: 3800,
-      amt: 2500
-    },
-    {
-      name: "Page G",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100
-    }
-  ]
+import { BarChart, Bar, CartesianGrid, PieChart, Pie, Cell } from 'recharts'
+const COLORS = ['#FFFFFF', '#00C49F'];
 
 class DatasetProperty extends React.Component {
     state = {
@@ -53,43 +9,148 @@ class DatasetProperty extends React.Component {
     }
 
     componentDidMount() {
-        let url = "http://localhost:52775/csp/explorer/explore/"
+        let url = "http://localhost:52773/api/explorer/explore/"
         url += this.props.dataset
         url += "/prop/" + this.props.name
+        url += "/" + this.props.type
+        console.log("fetching: "+url)
         fetch(url)
         .then( res => res.json() )
-        .then( (data) => {
-            this.setState( { dsprops: data })
+        .then( (propdata) => {
+            this.setState( { dsprops: propdata })
         })
         .catch(console.log)
     }
 
-    renderChart() {
-        return (
-            <BarChart width={150} height={40} data={data}>
-                <Bar dataKey="uv" fill="#8884d8" />
-            </BarChart>      
-        )
+    roundNum(num, sigdigits=1) {
+      sigdigits = 10 ** sigdigits
+      return Math.round(num * sigdigits) / sigdigits
+    }
+
+    renderUniquePie() {
+      let notunique = this.state.dsprops.count-this.state.dsprops.unique
+      let dat = [ {name: 'Count', value: notunique}, {name: 'Unique', value: this.state.dsprops.unique} ]
+      return <PieChart width={50} height={50}>
+        <Pie data={dat} dataKey="value" fill="#8884D8" stroke="#00C49F">
+          {dat.map((entry, idx) => 
+            <Cell key={`cell-${idx}`} fill={COLORS[idx%COLORS.length]} />
+          )}
+        </Pie>
+      </PieChart>
+    }
+
+    renderHistogram() {
+      let chart
+      if (this.state.dsprops.mean) 
+        chart = <BarChart width={150} height={40} data={this.state.dsprops.bins}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#222533" />
+                  <Bar dataKey="value" fill="#5668FF" />
+                </BarChart>
+      if (this.props.type === 16) 
+        chart = <BarChart width={150} height={40} data={this.state.dsprops.tfcounts}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#222533" />
+                  <Bar dataKey="count" fill="#5668FF" />
+                </BarChart>
+
+      return chart
     }
 
     render() {
-        return (
-            <Grid container>
-                <Grid item xs={3}>
-                    <h4>{this.props.name}</h4>
-                </Grid>
-                <Grid item xs={2}>
-                    <p>prop 1</p>
-                </Grid>
-                <Grid item xs={2}>
-                <p>prop 2</p>
-                </Grid>
-                <Grid item xs={2}>
-                <p>prop 3</p>
-                </Grid>
-                <Grid item xs={3}>{this.renderChart()}</Grid>
+      let prop2, prop3, prop4, prop5, prophistogram, isNumeric, isBoolean, countTrue, countFalse
+      isNumeric = isBoolean = false
+      if (this.state.dsprops.mean) 
+        isNumeric = true
+      if (this.state.dsprops.tfcounts && this.props.type === 16) {
+        isBoolean = true
+        let c = this.state.dsprops.tfcounts
+        console.log(this.props.name)
+        console.log(c)
+        c.forEach(item => {
+          if (item.value === 0) 
+            countFalse = item.count
+          else 
+            countTrue = item.count          
+        })
+      }
+      if (this.state.dsprops.count === 0) {
+        prop2 = prop3 = prop4 = prop5 = prophistogram = <div>-</div>
+      }
+      else if (isNumeric) {
+        prop2 = 
+        <Grid item xs={1}>
+          <div className="code">
+          <div className="codeheader">mean</div>
+          <div className="code codeval">{this.roundNum(this.state.dsprops.mean, 3)}</div>
+        </div>
+        </Grid>
+        prop3 = <Grid item xs={2}>
+          <div className="code">
+          <div className="codeheader">std</div>
+          <div className="code codeval">{this.roundNum(this.state.dsprops.std, 3)}</div>
+        </div></Grid>
+        prop4 = <Grid item xs={1}>
+          <div className="code">
+          <div className="codeheader">min</div>
+          <div className="code codeval">{this.roundNum(this.state.dsprops.min)}</div>
+        </div></Grid>
+        prop5 = <Grid item xs={1}>
+          <div className="code">
+          <div className="codeheader">max</div>
+          <div className="code codeval">{this.roundNum(this.state.dsprops.max)}</div>
+        </div></Grid>
+        prophistogram = 
+        <Grid item xs={2}>
+          <div className="codeheader">histogram</div>
+          {this.renderHistogram()}
+        </Grid>
+      }
+      else {
+        prop2 = 
+        <Grid item xs={1}>
+          <div className="code">
+            <div className="codeheader">unique</div>
+            <div className="codeval">{this.state.dsprops.unique}</div>
+          </div>
+        </Grid>
+        prop3 = <Grid item xs={2}><div className="code">
+          <div className="codeheader">top</div>
+          <div className="codeval">{this.state.dsprops.top}</div>
+      </div></Grid>
+        prop4 = <Grid item xs={2}><div className="code">
+          <div className="codeheader">frequency of {this.state.dsprops.top}</div>
+          <div className="codeval">{this.roundNum(this.state.dsprops.freq)}</div>
+        </div></Grid>
+        prop5 = <Grid item xs={1}><div className="code">
+          <div></div>
+        </div></Grid>
+        prophistogram = 
+        <Grid item xs={1}>
+          <div className="code">
+            <div className="codeheader">unique</div>
+            {this.renderUniquePie()}
+          </div>
+        </Grid>
+      }
+
+      return (
+        <div className="datasetproperty">
+          <Grid container>
+            <Grid item xs={2}>
+              <div className="codeheader">property</div>
+              <div className="code codeval dataprop">{this.props.name}</div>
             </Grid>
-        )
+            <Grid item xs={1}>
+              <div className="codeheader">count</div>
+              <div className="code codeval dataprop">{this.state.dsprops.count}</div>
+            </Grid>
+            {prop2}
+            {prop3}
+            {prop4}
+            {prop5}
+            {prophistogram}
+          </Grid>
+        </div>
+      )
     }
 }
 
