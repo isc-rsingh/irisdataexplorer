@@ -60,18 +60,18 @@ class DatasetProperty extends React.Component {
       isNumeric = isBoolean = false
       if (this.state.dsprops.mean) 
         isNumeric = true
-      if (this.state.dsprops.tfcounts && this.props.type === 16) {
-        isBoolean = true
-        let c = this.state.dsprops.tfcounts
-        console.log(this.props.name)
-        console.log(c)
-        c.forEach(item => {
-          if (item.value === 0) 
-            countFalse = item.count
-          else 
-            countTrue = item.count          
-        })
-      }
+      // if (this.state.dsprops.tfcounts && this.props.type === 16) {
+      //   isBoolean = true
+      //   let c = this.state.dsprops.tfcounts
+      //   console.log(this.props.name)
+      //   console.log(c)
+      //   c.forEach(item => {
+      //     if (item.value === 0) 
+      //       countFalse = item.count
+      //     else 
+      //       countTrue = item.count          
+      //   })
+      // }
       if (this.state.dsprops.count === 0) {
         prop2 = prop3 = prop4 = prop5 = prophistogram = <div>-</div>
       }

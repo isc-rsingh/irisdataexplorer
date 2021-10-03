@@ -3,6 +3,7 @@ import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid'
 import DatasetProperty from './DatasetProperty'
 import { Divider } from '@material-ui/core'
+import './App.css'
 
 class App extends React.Component {
   constructor(props) {
@@ -27,7 +28,7 @@ class App extends React.Component {
   renderDataset() {
     return (
       this.state.datasetprops.map( (dsp) =>
-        <DatasetProperty name={Object.keys(dsp)[0]} type={dsp[Object.keys(dsp)[0]]} dataset={this.state.dataset} />
+        <DatasetProperty key={dsp[Object.keys(dsp)[0]]} name={Object.keys(dsp)[0]} type={dsp[Object.keys(dsp)[0]]} dataset={this.state.dataset} />
       )
     )
   }
@@ -40,13 +41,17 @@ class App extends React.Component {
       })
       .catch(console.log)
   }
+
+  unloadDataset() {
+    this.setState({ dataset: null })
+  }
   
   renderDatasets() {
     return (
       this.state.datasets.map( (ds) =>
         <Grid container>
           <Grid item xs={12}>
-            <h3 id={ds} className="dataset" onClick={()=>this.loadDataset(ds)}>{ds}</h3>
+            <h3 key={ds} className="dataset" onClick={()=>this.loadDataset(ds)}>{ds}</h3>
             <Divider />
           </Grid>
         </Grid>
@@ -59,7 +64,7 @@ class App extends React.Component {
     let leftbody = null
     if (this.state.dataset) {
       lefthead = <span>
-        <span className="dsbreadcrumb">Data Sets / </span>
+        <span className="dsbreadcrumb" onClick={()=>this.unloadDataset()}><a href="/">Data Sets</a> / </span>
         <span>{this.state.dataset}</span>
       </span>
       leftbody = this.renderDataset()
@@ -70,7 +75,8 @@ class App extends React.Component {
 
     return (
       <Grid container>
-        <Container maxWidth="lg">
+        <Container id="irisdataexplorer" maxWidth="lg">
+        <h1>IRIS Dataset Explorer</h1>
         <Grid item xs={12}>
                 <h2>{lefthead}</h2>
                 <div>{leftbody}</div>
