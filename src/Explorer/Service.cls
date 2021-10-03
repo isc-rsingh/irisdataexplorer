@@ -25,7 +25,7 @@ ClassMethod ExploreP(dataset As %String, prop As %String, proptype As %Integer) 
         ret["count"] = cnt
         return json.dumps(ret)
  
-    rs = iris.sql.exec("SELECT " + prop + " FROM " + dataset)
+    rs = iris.sql.exec('SELECT "' + prop + '" FROM ' + dataset)
     df = rs.dataframe()
     b = df[prop.lower()].describe()
     ret = json.loads(b.to_json())
@@ -60,7 +60,6 @@ ClassMethod GetDatasetProperties(dataset As %String = "Data.Crimes2021") As %Sta
     try {
         set sqlquery = "SELECT TOP 1 * FROM "_dataset
         set rs = ##class(%SQL.Statement).%ExecDirect(,sqlquery)
-        #; set colCount = rs.%ResultColumnCount
         set cols = rs.%GetMetadata().columns
         set idx = 1
         set props = ""
