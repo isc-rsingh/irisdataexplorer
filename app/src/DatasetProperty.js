@@ -1,7 +1,7 @@
 import React from 'react'
 import Grid from '@material-ui/core/Grid'
-import { BarChart, Bar, CartesianGrid, PieChart, Pie, Cell } from 'recharts'
-const COLORS = ['#FFFFFF', '#00C49F'];
+import { BarChart, Bar, XAxis, CartesianGrid, PieChart, Pie, Cell } from 'recharts'
+const COLORS = ['#FFFFFF', '#38003D'];
 
 class DatasetProperty extends React.Component {
     state = {
@@ -9,7 +9,7 @@ class DatasetProperty extends React.Component {
     }
 
     componentDidMount() {
-        let url = "http://localhost:52773/api/explorer/explore/"
+        let url = "http://localhost:52774/api/explorer/explore/"
         url += this.props.dataset
         url += "/prop/" + this.props.name
         url += "/" + this.props.type
@@ -28,10 +28,10 @@ class DatasetProperty extends React.Component {
     }
 
     renderUniquePie() {
-      let notunique = this.state.dsprops.count-this.state.dsprops.unique
-      let dat = [ {name: 'Count', value: notunique}, {name: 'Unique', value: this.state.dsprops.unique} ]
+      let notunique = this.state.dsprops.count-this.state.dsprops.freq
+      let dat = [ {name: 'Count', value: notunique}, {name: 'Unique', value: this.state.dsprops.freq} ]
       return <PieChart width={50} height={50}>
-        <Pie data={dat} dataKey="value" fill="#8884D8" stroke="#00C49F">
+        <Pie data={dat} dataKey="value" fill="#8884D8" stroke="#38003D">
           {dat.map((entry, idx) => 
             <Cell key={`cell-${idx}`} fill={COLORS[idx%COLORS.length]} />
           )}
@@ -42,14 +42,15 @@ class DatasetProperty extends React.Component {
     renderHistogram() {
       let chart
       if (this.state.dsprops.mean) 
-        chart = <BarChart width={150} height={40} data={this.state.dsprops.bins}>
+        chart = <BarChart width={150} height={80} data={this.state.dsprops.bins}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#222533" />
-                  <Bar dataKey="value" fill="#5668FF" />
+                  <XAxis dataKey="left" />
+                  <Bar dataKey="value" fill="#38003D" />
                 </BarChart>
       if (this.props.type === 16) 
         chart = <BarChart width={150} height={40} data={this.state.dsprops.tfcounts}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#222533" />
-                  <Bar dataKey="count" fill="#5668FF" />
+                  <Bar dataKey="count" fill="#38003D" />
                 </BarChart>
 
       return chart
@@ -58,8 +59,9 @@ class DatasetProperty extends React.Component {
     render() {
       let prop2, prop3, prop4, prop5, prophistogram, isNumeric, isBoolean, countTrue, countFalse
       isNumeric = isBoolean = false
-      if (this.state.dsprops.mean) 
+      if ('mean' in this.state.dsprops) 
         isNumeric = true
+      // @TODO do something interesting to visualize booleans differently than strings
       // if (this.state.dsprops.tfcounts && this.props.type === 16) {
       //   isBoolean = true
       //   let c = this.state.dsprops.tfcounts
@@ -99,7 +101,7 @@ class DatasetProperty extends React.Component {
           <div className="code codeval">{this.roundNum(this.state.dsprops.max)}</div>
         </div></Grid>
         prophistogram = 
-        <Grid item xs={2}>
+        <Grid item xs={3}>
           <div className="codeheader">histogram</div>
           {this.renderHistogram()}
         </Grid>
@@ -124,9 +126,9 @@ class DatasetProperty extends React.Component {
           <div></div>
         </div></Grid>
         prophistogram = 
-        <Grid item xs={1}>
+        <Grid item xs={2}>
           <div className="code">
-            <div className="codeheader">unique</div>
+            <div className="codeheader">{this.state.dsprops.top}</div>
             {this.renderUniquePie()}
           </div>
         </Grid>
@@ -141,7 +143,7 @@ class DatasetProperty extends React.Component {
             </Grid>
             <Grid item xs={1}>
               <div className="codeheader">count</div>
-              <div className="code codeval dataprop">{this.state.dsprops.count}</div>
+              <div className="code codeval">{this.state.dsprops.count}</div>
             </Grid>
             {prop2}
             {prop3}

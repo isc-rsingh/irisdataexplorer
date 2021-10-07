@@ -1,4 +1,26 @@
-/// Description
+/// IRIS data explorer data generator API
+/// Property type codes are as follows
+/// see: https://docs.intersystems.com/irislatest/csp/documatic/%25CSP.Documatic.cls?&LIBRARY=%25SYS&CLASSNAME=%25SQL.StatementColumn#PROPERTY_clientType
+/// 1		BINARY
+/// 2		DATE
+/// 3		DOUBLE
+/// 4		HANDLE
+/// 5		INTEGER
+/// 6		LIST
+/// 7		LONGVARCHAR
+/// 8		TIME
+/// 9		TIMESTAMP
+/// 10		VARCHAR
+/// 11		STATUS
+/// 12		BINARYSTREAM
+/// 13		CHARACTERSTREAM
+/// 14		NUMERIC
+/// 15		CURRENCY
+/// 16		BOOLEAN
+/// 17		OID
+/// 18		BIGINT
+/// 19		FDATE
+/// 20		FTIMESTAMP
 Class Explorer.Service Extends %CSP.REST
 {
 
@@ -13,6 +35,7 @@ ClassMethod ExploreP(dataset As %String, prop As %String, proptype As %Integer) 
     import pandas as pd
     import json
 
+    # boolean data type
     if int(proptype) == 16: 
         rs = iris.sql.exec('SELECT "' + prop + '" as val, count("'+prop+'") as cnt FROM ' + dataset + ' GROUP BY "' + prop + '"')
         ret = {}
@@ -25,13 +48,21 @@ ClassMethod ExploreP(dataset As %String, prop As %String, proptype As %Integer) 
         ret["count"] = cnt
         return json.dumps(ret)
  
+    # if we're here we know it's not a boolean
     rs = iris.sql.exec('SELECT "' + prop + '" FROM ' + dataset)
     df = rs.dataframe()
     b = df[prop.lower()].describe()
-    ret = json.loads(b.to_json())
  
+    # no data case
     if (b["count"] == 0):
         ret = { "count": 0 }
+
+    ret = json.loads(b.to_json())
+    # @TODO handle strings better
+    if int(proptype) == 10:
+        return json.dumps(ret)
+
+    # this is good for numeric values
     elif ("min" in b):
         c = df[prop.lower()].value_counts(bins=10, sort=False)
         clist = []
@@ -43,8 +74,7 @@ ClassMethod ExploreP(dataset As %String, prop As %String, proptype As %Integer) 
             d['right'] = str(iv[0].right)
             clist.append(d)
         ret["bins"] = clist
- 
-    return json.dumps(ret)
+        return json.dumps(ret)
 }
 
 /// Description

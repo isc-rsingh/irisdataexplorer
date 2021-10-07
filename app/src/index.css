@@ -32,6 +32,10 @@ hr.MuiDivider-root {
   margin-left: 0;
 }
 
+h3.dataset {
+  cursor: pointer;
+}
+
 .dsbreadcrumb {
   color: #39444E;
 }
@@ -47,10 +51,19 @@ hr.MuiDivider-root {
 
 .codeheader {
   /* color: #ECF0F1; */
-  color: #666666;
+  color: #AAAAAA;
   font-size: 9pt;
 }
 
 .codeval {
   font-size: 11pt;
+}
+
+.codeval.dataprop {
+  font-weight: 700;
+}
+
+/* for charts */
+tspan {
+  font-size: 9px;
 }
