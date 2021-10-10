@@ -17,7 +17,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    fetch("http://localhost:52773/api/explorer/explore/datasets")
+    fetch(process.env.REACT_APP_IRISENDPOINT + "/explore/datasets")
       .then(res => res.json() )
       .then( (data) => {
         this.setState({ datasets: data.datasets})
@@ -34,7 +34,7 @@ class App extends React.Component {
   }
 
   loadDataset(ds) {
-    fetch("http://localhost:52773/api/explorer/explore/"+ds+"/props")
+    fetch(process.env.REACT_APP_IRISENDPOINT + "/explore/"+ds+"/props")
       .then(res => res.json() )
       .then( (data) => {
         this.setState({ dataset: ds, datasetprops: data.properties})
@@ -75,8 +75,8 @@ class App extends React.Component {
 
     return (
       <Grid container>
+        <div className="app-title">IRIS Dataset Explorer</div>
         <Container id="irisdataexplorer" maxWidth="lg">
-        <h1>IRIS Dataset Explorer</h1>
         <Grid item xs={12}>
                 <h2>{lefthead}</h2>
                 <div>{leftbody}</div>

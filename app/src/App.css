@@ -28,13 +28,12 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.app-title {
+  color: white;
+  background-color: #282c34;
+  width: 100%;
+  padding: 24px;
+  font-size: 48px;
 }
 
 h1,h2,h3,h4,h5 {

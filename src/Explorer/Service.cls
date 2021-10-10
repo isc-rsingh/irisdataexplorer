@@ -66,7 +66,7 @@ ClassMethod ExploreP(dataset As %String, prop As %String, proptype As %Integer) 
     elif ("min" in b):
         c = df[prop.lower()].value_counts(bins=10, sort=False)
         clist = []
-        for iv in c.iteritems():
+        for iv in c.iteritems(): 
             d = {}
             ivlr = str(iv[0].left) + " - " + str(iv[0].right)
             d['value'] = iv[1]

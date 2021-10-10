@@ -9,7 +9,7 @@ class DatasetProperty extends React.Component {
     }
 
     componentDidMount() {
-        let url = "http://localhost:52774/api/explorer/explore/"
+        let url = process.env.REACT_APP_IRISENDPOINT + "/explore/"
         url += this.props.dataset
         url += "/prop/" + this.props.name
         url += "/" + this.props.type
