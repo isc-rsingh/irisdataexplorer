@@ -28,7 +28,7 @@ Parameter HandleCorsRequest = 1;
 
 Parameter CONTENTTYPE = "application/json";
 
-/// Description 
+/// Generate descriptive statistics using Pandas describe and value_counts 
 ClassMethod ExploreP(dataset As %String, prop As %String, proptype As %Integer) As %String [ Language = python ]
 {
     import iris
@@ -46,7 +46,7 @@ ClassMethod ExploreP(dataset As %String, prop As %String, proptype As %Integer) 
             cnt += row[1]
         ret["tfcounts"] = tfcounts
         ret["count"] = cnt
-        return json.dumps(ret)
+        print( json.dumps(ret) )
  
     # if we're here we know it's not a boolean
     rs = iris.sql.exec('SELECT "' + prop + '" FROM ' + dataset)
@@ -60,7 +60,7 @@ ClassMethod ExploreP(dataset As %String, prop As %String, proptype As %Integer) 
     ret = json.loads(b.to_json())
     # @TODO handle strings better
     if int(proptype) == 10:
-        return json.dumps(ret)
+        print( json.dumps(ret) )
 
     # this is good for numeric values
     elif ("min" in b):
@@ -74,17 +74,10 @@ ClassMethod ExploreP(dataset As %String, prop As %String, proptype As %Integer) 
             d['right'] = str(iv[0].right)
             clist.append(d)
         ret["bins"] = clist
-        return json.dumps(ret)
+        print( json.dumps(ret) )
 }
 
-/// Description
-ClassMethod Explore(dataset As %String, prop As %String = "", proptype As %Integer) As %Status
-{
-    set a = 3
-    write ..ExploreP(dataset, prop, proptype)
-    Return $$$OK
-}
-
+/// Generate a list of property names and their data types
 ClassMethod GetDatasetProperties(dataset As %String = "Data.Crimes2021") As %Status
 {
     try {
@@ -107,7 +100,7 @@ ClassMethod GetDatasetProperties(dataset As %String = "Data.Crimes2021") As %Sta
     Return $$$OK
 }
 
-/// Returns all table names
+/// Generate a list of table names that are not system tables
 ClassMethod GetDatasets() As %Status
 {
     try {
@@ -138,13 +131,11 @@ ClassMethod GetDatasetsPython() As %Integer [ Language = python ]
         datasetlist = []
         for row in rs:
             datasetlist.append(row[0]+'.'+row[1])
-            #; print(row)
         datasets = {}
         datasets['datasets'] = datasetlist
         print(datasets)
         return
     except Exception as ex:
-        #; print(ex)
         pass
     return 0
 }
@@ -154,7 +145,7 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Routes>
     <Route Url="/explore/datasets" Method="GET" Call="GetDatasets" />
     <Route Url="/explore/:dataset/props" Method="GET" Call="GetDatasetProperties" />
-    <Route Url="/explore/:dataset/prop/:prop/:type" Method="GET" Call="Explore" />
+    <Route Url="/explore/:dataset/prop/:prop/:type" Method="GET" Call="ExploreP" />
 </Routes>
 }
 
