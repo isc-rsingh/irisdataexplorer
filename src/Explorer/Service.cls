@@ -46,7 +46,7 @@ ClassMethod ExploreP(dataset As %String, prop As %String, proptype As %Integer) 
             cnt += row[1]
         ret["tfcounts"] = tfcounts
         ret["count"] = cnt
-        print( json.dumps(ret) )
+        return json.dumps(ret)
  
     # if we're here we know it's not a boolean
     rs = iris.sql.exec('SELECT "' + prop + '" FROM ' + dataset)
@@ -60,7 +60,7 @@ ClassMethod ExploreP(dataset As %String, prop As %String, proptype As %Integer) 
     ret = json.loads(b.to_json())
     # @TODO handle strings better
     if int(proptype) == 10:
-        print( json.dumps(ret) )
+        return json.dumps(ret)
 
     # this is good for numeric values
     elif ("min" in b):
@@ -74,7 +74,13 @@ ClassMethod ExploreP(dataset As %String, prop As %String, proptype As %Integer) 
             d['right'] = str(iv[0].right)
             clist.append(d)
         ret["bins"] = clist
-        print( json.dumps(ret) )
+        return json.dumps(ret)
+}
+
+ClassMethod Explore(dataset As %String, prop As %String = "", proptype As %Integer) As %Status
+{
+    write ..ExploreP(dataset, prop, proptype)
+    Return $$$OK
 }
 
 /// Generate a list of property names and their data types
@@ -145,7 +151,7 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Routes>
     <Route Url="/explore/datasets" Method="GET" Call="GetDatasets" />
     <Route Url="/explore/:dataset/props" Method="GET" Call="GetDatasetProperties" />
-    <Route Url="/explore/:dataset/prop/:prop/:type" Method="GET" Call="ExploreP" />
+    <Route Url="/explore/:dataset/prop/:prop/:type" Method="GET" Call="Explore" />
 </Routes>
 }
 
