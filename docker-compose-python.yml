@@ -9,7 +9,7 @@ services:
         - IRIS_PASSWORD=${IRIS_PASSWORD:-SYS}
     volumes:
       - .:/tmp/iris
-    #command: -a "sh /opt/irisapp/flask_server_start.sh"
+    command: -a "sh /opt/irisapp/flask_server_start.sh"
     ports:
     - 52775:52773
     - 51776:1972
@@ -19,4 +19,4 @@ services:
     build:
       context: app
     ports:
-      - 8080:3000
+      - 3000:80
