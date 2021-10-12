@@ -15,3 +15,8 @@ services:
     - 51776:1972
     - 4040:8080
     - 4041:8081
+  react:
+    build:
+      context: app
+    ports:
+      - 8080:3000
