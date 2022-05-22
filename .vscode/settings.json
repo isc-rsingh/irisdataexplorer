@@ -1,8 +1,13 @@
 {
     "objectscript.conn": {
-        "server": "irispy",
         "ns": "USER",
-        "active": true, 
+        "active": true,
+        "username": "SuperUser",
+        "password": "SYS",
+        "docker-compose": {
+            "service": "iris",
+            "internalPort": 52773
+        }
     },
     "jshint.enable": false
 }
