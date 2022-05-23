@@ -1,4 +1,8 @@
-ARG IMAGE=arti.iscinternal.com/intersystems/iris:2021.1.0PYTHON.330.0
+ARG IMAGE=arti.iscinternal.com/ç/iris:2021.1.0PYTHON.330.0
+# For an M1 Mac, comment the line below and uncomment the one pulling irishealth-community-arm64
+#ARG IMAGE=containers.intersystems.com/intersystems/irishealth-community:2022.1.0.199.0
+ARG IMAGE=containers.intersystems.com/intersystems/irishealth-community-arm64:2022.1.0.199.0
+
 FROM $IMAGE
 
 USER root
