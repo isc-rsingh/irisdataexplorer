@@ -1,7 +1,7 @@
 version: '3.6'
 services:
   iris:
-    container_name: 'irispy'
+    command: --check-caps false
     build: 
       context: .
       dockerfile: Dockerfile
